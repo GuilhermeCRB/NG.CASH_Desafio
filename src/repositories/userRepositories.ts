@@ -1,9 +1,15 @@
 import db from '../config/database.js';
 
-import { UserWithAccount } from '../services/userService.js';
+import { UserCreation } from '../services/userService.js';
 
-export async function createUser(userData: UserWithAccount) {
-  await db.user.create({
-    data: userData,
+export async function createUser(userData: UserCreation, initialBalance = 10000) {
+  await db.$transaction(async (db) => {
+    const account = await db.account.create({
+      data: { balance: initialBalance },
+    });
+
+    await db.user.create({
+      data: { ...userData, accountId: account.id },
+    });
   });
 }

@@ -8,7 +8,7 @@ export type UserWithAccount = Omit<User, 'id'>;
 
 async function signUpUser(user: UserCreation) {
   const encryptedPassword = encryptPassword(user.password);
-  await createUser({ ...user, password: encryptedPassword, accountId: 1 });
+  await createUser({ ...user, password: encryptedPassword });
 }
 
 function encryptPassword(password: string) {
