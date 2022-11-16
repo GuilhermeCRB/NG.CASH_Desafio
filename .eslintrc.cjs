@@ -12,6 +12,7 @@ module.exports = {
   rules: {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/no-explicit-any': 0,
     'no-console': ['error', { allow: ['log'] }],
     'import/no-unresolved': 'error',
     'import/order': 'off',
