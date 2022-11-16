@@ -1,0 +1,6 @@
+services:
+  app:
+    container_name: node_app
+    build: .
+    ports:
+      - 4000:4000
