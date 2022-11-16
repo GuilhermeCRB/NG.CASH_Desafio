@@ -6,6 +6,38 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  username     String        @unique
+  password     String        @unique
+  accountId    Int           @unique
+  account      Account       @relation(fields: [accountId], references: [id])
+  debitedUser  Transaction[] @relation("debitedUser")
+  creditedUser Transaction[] @relation("creditedUser")
+
+  @@map("users")
+}
+
+model Account {
+  id      Int   @id @default(autoincrement())
+  balance Int
+  user    User?
+
+  @@map("accounts")
+}
+
+model Transaction {
+  id                Int      @id @default(autoincrement())
+  debitedAccountId  Int
+  creditedAccountId Int
+  value             Int
+  createdAt         DateTime @default(now())
+  debitedUser       User     @relation("debitedUser", fields: [debitedAccountId], references: [id])
+  creditedUser      User     @relation("creditedUser", fields: [creditedAccountId], references: [id])
+
+  @@map("transactions")
 }

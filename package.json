@@ -6,10 +6,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon src/server.ts",
     "start": "node dist/src/server.js",
-    "test": "dotenv -e .env.test prisma migrate dev && NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test jest -- -i --detectOpenHandles",
-    "test:unit": "dotenv -e .env.test NODE_OPTIONS=--experimental-vm-modules jest -- -i --coverage ./tests/unit"
+    "dev": "NODE_ENV=development nodemon src/server.ts",
+    "dev:migrate": "dotenv -e .env.development -- npx prisma migrate dev"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +33,7 @@
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
+    "dotenv-cli": "^6.0.0",
     "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^3.5.2",
