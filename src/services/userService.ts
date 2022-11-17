@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import { createUser, findUser } from '../repositories/userRepositories.js';
+import { createUser, findUser } from '../repositories/userRepository.js';
 import { UserCreation } from '../schemas/userSchema.js';
 import { unauthorizedError } from '../utils/errorUtils.js';
 

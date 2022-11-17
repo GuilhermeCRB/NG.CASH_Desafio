@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { conflictError } from '../utils/errorUtils.js';
 import { UserCreation } from '../schemas/userSchema.js';
-import { findUser } from '../repositories/userRepositories.js';
+import { findUser } from '../repositories/userRepository.js';
 
 export async function isUsernamelUnique(req: Request, res: Response, next: NextFunction) {
   const user: UserCreation = res.locals.body;
