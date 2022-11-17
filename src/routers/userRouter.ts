@@ -9,7 +9,7 @@ import userSchema from '../schemas/userSchema.js';
 const userRouter = Router();
 
 userRouter
-  .post('/sign-up', sanitizeInputs(), validateSchema(userSchema), isUsernamelUnique, signUp)
-  .post('/sign-in', sanitizeInputs(), validateSchema(userSchema), signIn);
+  .post('/sign-up', sanitizeInputs, validateSchema(userSchema), isUsernamelUnique, signUp)
+  .post('/sign-in', sanitizeInputs, validateSchema(userSchema), signIn);
 
 export default userRouter;
