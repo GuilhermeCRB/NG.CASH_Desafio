@@ -13,3 +13,9 @@ export async function createUser(userData: UserCreation, initialBalance = 10000)
     });
   });
 }
+
+export async function findUser(username: string) {
+  return await db.user.findFirst({
+    where: { username },
+  });
+}
