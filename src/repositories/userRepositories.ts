@@ -1,6 +1,6 @@
 import db from '../config/database.js';
 
-import { UserCreation } from '../services/userService.js';
+import { UserCreation } from '../schemas/userSchema.js';
 
 export async function createUser(userData: UserCreation, initialBalance = 10000) {
   await db.$transaction(async (db) => {

@@ -1,10 +1,7 @@
-import { User } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 import { createUser } from '../repositories/userRepositories.js';
-
-export type UserCreation = Omit<User, 'id' | 'accountId'>;
-export type UserWithAccount = Omit<User, 'id'>;
+import { UserCreation } from '../schemas/userSchema.js';
 
 async function signUpUser(user: UserCreation) {
   const encryptedPassword = encryptPassword(user.password);
