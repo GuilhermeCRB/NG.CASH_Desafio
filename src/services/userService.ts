@@ -28,11 +28,11 @@ async function matchEmailAndPassword(user: UserCreation) {
   const isValidated: boolean = bcrypt.compareSync(user.password, userFromDb.password);
   if (!isValidated) throw unauthorizedError('Nome de usuário ou senha inválidos.');
 
-  return userFromDb;
+  return userFromDb.username;
 }
 
-function generateToken(user: User) {
-  return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '24h' });
+function generateToken(username: string) {
+  return jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '24h' });
 }
 
 const accessService = {
