@@ -1,5 +1,7 @@
+import db from '../config/database.js';
+import { PrismaClient } from '@prisma/client';
 import { TransactionReceived } from '../controllers/transactionController.js';
-import { findAccountByUserId } from '../repositories/accountRepository.js';
+import { findAccountByUserId, updateAccountBalance } from '../repositories/accountRepository.js';
 import { saveTransaction } from '../repositories/transactionRepository.js';
 import { findUser } from '../repositories/userRepository.js';
 import { notFoundError } from '../utils/errorUtils.js';
@@ -7,8 +9,17 @@ import { notFoundError } from '../utils/errorUtils.js';
 async function makeTransaction(debitedAccountId: number, transactionInfo: TransactionReceived) {
   const { creditedUsername, value } = transactionInfo;
   const formatedValue = formatValue(value);
-  const creditedAccountId = await findAccountId(creditedUsername);
-  await saveTransaction({ creditedAccountId, debitedAccountId, value: formatedValue });
+  const creditedAccount = await findAccount(creditedUsername);
+
+  await db.$transaction(async (prisma: PrismaClient) => {
+    await updateAccountBalance(prisma, debitedAccountId, formatedValue, 'decrement');
+    await updateAccountBalance(prisma, creditedAccount.id, formatedValue, 'increment');
+    await saveTransaction(prisma, {
+      creditedAccountId: creditedAccount.id,
+      debitedAccountId,
+      value: formatedValue,
+    });
+  });
 }
 
 function formatValue(value: string) {
@@ -16,7 +27,7 @@ function formatValue(value: string) {
   return parseInt(formatedValue);
 }
 
-async function findAccountId(username: string) {
+async function findAccount(username: string) {
   const userFromDb = await findUser(username);
   if (!userFromDb)
     throw notFoundError(
@@ -29,7 +40,7 @@ async function findAccountId(username: string) {
       'Não foi possível localizar conta do destinatário. Por favor, confira os dados e tente novamente. Caso o probelma persista, entre em contato com nossa equipe de suporte.',
     );
 
-  return account.id;
+  return account;
 }
 
 const transactionService = {

@@ -11,5 +11,5 @@ export async function makeUserTransaction(req: Request, res: Response) {
   const userAccountId: number = res.locals.userAccountId;
   const transactionInfo: TransactionReceived = res.locals.body;
   await transactionService.makeTransaction(userAccountId, transactionInfo);
-  res.sendStatus(201);
+  res.sendStatus(200);
 }

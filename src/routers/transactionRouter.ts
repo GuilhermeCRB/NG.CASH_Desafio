@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { makeUserTransaction } from '../controllers/transactionController.js';
 import { sanitizeInputs } from '../middlewares/sanitizeInputs.js';
-import { validateAccountAndSaveId } from '../middlewares/validateAccountAndSaveId.js';
+import { validateAccountAndSaveId } from '../middlewares/validateAndSaveAccount.js';
 import validateToken from '../middlewares/validateToken.js';
 
 const transactionRouter = Router();
