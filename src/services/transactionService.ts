@@ -1,22 +1,25 @@
 import db from '../config/database.js';
-import { PrismaClient } from '@prisma/client';
+import { Account, PrismaClient } from '@prisma/client';
+
 import { TransactionReceived } from '../controllers/transactionController.js';
 import { findAccountByUserId, updateAccountBalance } from '../repositories/accountRepository.js';
 import { saveTransaction } from '../repositories/transactionRepository.js';
 import { findUser } from '../repositories/userRepository.js';
-import { notFoundError } from '../utils/errorUtils.js';
+import { notFoundError, unauthorizedError } from '../utils/errorUtils.js';
 
-async function makeTransaction(debitedAccountId: number, transactionInfo: TransactionReceived) {
+async function makeTransaction(userAccount: Account, transactionInfo: TransactionReceived) {
   const { creditedUsername, value } = transactionInfo;
   const formatedValue = formatValue(value);
   const creditedAccount = await findAccount(creditedUsername);
 
+  if (formatedValue > userAccount.balance) throw unauthorizedError('Saldo insuficiente');
+
   await db.$transaction(async (prisma: PrismaClient) => {
-    await updateAccountBalance(prisma, debitedAccountId, formatedValue, 'decrement');
+    await updateAccountBalance(prisma, userAccount.id, formatedValue, 'decrement');
     await updateAccountBalance(prisma, creditedAccount.id, formatedValue, 'increment');
     await saveTransaction(prisma, {
       creditedAccountId: creditedAccount.id,
-      debitedAccountId,
+      debitedAccountId: userAccount.id,
       value: formatedValue,
     });
   });

@@ -5,7 +5,7 @@ import { findUser } from '../repositories/userRepository.js';
 import { notFoundError } from '../utils/errorUtils.js';
 import { UserFromToken } from './validateToken.js';
 
-export async function validateAccountAndSaveId(req: Request, res: Response, next: NextFunction) {
+export async function validateAndSaveAccount(req: Request, res: Response, next: NextFunction) {
   const user: UserFromToken = res.locals.user;
 
   const userFromDb = await findUser(user.username);
@@ -17,7 +17,7 @@ export async function validateAccountAndSaveId(req: Request, res: Response, next
       'Não foi possível localizar sua conta. Tente logar novamente e se persistir o problema, entre em contato com nossa equipe de suporte.',
     );
 
-  res.locals.userAccountId = userFromDb.accountId;
+  res.locals.userAccount = userAccount;
 
   next();
 }

@@ -1,3 +1,4 @@
+import { Account } from '@prisma/client';
 import { Request, Response } from 'express';
 
 import transactionService from '../services/transactionService.js';
@@ -8,8 +9,8 @@ export type TransactionReceived = {
 };
 
 export async function makeUserTransaction(req: Request, res: Response) {
-  const userAccountId: number = res.locals.userAccountId;
+  const userAccount: Account = res.locals.userAccount;
   const transactionInfo: TransactionReceived = res.locals.body;
-  await transactionService.makeTransaction(userAccountId, transactionInfo);
+  await transactionService.makeTransaction(userAccount, transactionInfo);
   res.sendStatus(200);
 }
