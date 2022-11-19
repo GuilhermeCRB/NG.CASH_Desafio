@@ -1,12 +1,7 @@
 import { Request, Response } from 'express';
 
 import accountService from '../services/accountService.js';
-
-type UserFromToken = {
-  username: string;
-  iat: number;
-  exp: number;
-};
+import { UserFromToken } from '../middlewares/validateToken.js';
 
 export async function getUserBalance(req: Request, res: Response) {
   const user: UserFromToken = res.locals.user;

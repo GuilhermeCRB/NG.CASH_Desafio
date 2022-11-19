@@ -3,6 +3,12 @@ import jwt from 'jsonwebtoken';
 
 import { unauthorizedError } from '../utils/errorUtils.js';
 
+export type UserFromToken = {
+  username: string;
+  iat: number;
+  exp: number;
+};
+
 export default function validateToken(req: Request, res: Response, next: NextFunction) {
   const { authorization } = req.headers;
   const token = authorization?.replace('Bearer', '').trim();
