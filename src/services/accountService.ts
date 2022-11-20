@@ -1,6 +1,7 @@
 import { findAccountByUserId } from '../repositories/accountRepository.js';
 import { findUser } from '../repositories/userRepository.js';
 import { notFoundError } from '../utils/errorUtils.js';
+import { formatValueToString } from '../utils/formatValue.js';
 
 async function getAccountBalance(username: string) {
   const userFromDb = await findUser(username);
@@ -12,14 +13,7 @@ async function getAccountBalance(username: string) {
       'Não foi possível localizar sua conta. Tente logar novamente e se persistir o problema, entre em contato com nossa equipe de suporte',
     );
 
-  return formatBalance(account.balance);
-}
-
-function formatBalance(balance: number) {
-  const stringfiedBalance = balance.toString();
-  const fullValuePart = stringfiedBalance.slice(0, -2);
-  const centsPart = stringfiedBalance.slice(-2);
-  return `R$ ${fullValuePart},${centsPart}`;
+  return formatValueToString(account.balance);
 }
 
 const accountService = {

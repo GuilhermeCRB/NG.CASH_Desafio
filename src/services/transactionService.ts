@@ -1,15 +1,27 @@
 import db from '../config/database.js';
-import { Account, PrismaClient } from '@prisma/client';
+import { Account, PrismaClient, User } from '@prisma/client';
 
-import { TransactionReceived } from '../controllers/transactionController.js';
+import { UserTransaction } from '../controllers/transactionController.js';
 import { findAccountByUserId, updateAccountBalance } from '../repositories/accountRepository.js';
-import { saveTransaction } from '../repositories/transactionRepository.js';
+import { findTransactions, saveTransaction } from '../repositories/transactionRepository.js';
 import { findUser } from '../repositories/userRepository.js';
 import { badRequestError, notFoundError } from '../utils/errorUtils.js';
+import { formatValueToNumber, formatValueToString } from '../utils/formatValue.js';
 
-async function makeTransaction(username: string, userAccount: Account, transactionInfo: TransactionReceived) {
+type FoundDbTransaction = {
+  createdAt: Date;
+  value: number;
+  debitedAccount: {
+    user: Omit<User, 'id' | 'password' | 'accountId'>;
+  };
+  creditedAccount: {
+    user: Omit<User, 'id' | 'password' | 'accountId'>;
+  };
+};
+
+async function makeTransaction(username: string, userAccount: Account, transactionInfo: UserTransaction) {
   const { creditedUsername, value } = transactionInfo;
-  const formatedValue = formatValue(value);
+  const formatedValue = formatValueToNumber(value);
   const creditedAccount = await findAccount(creditedUsername);
 
   if (creditedUsername === username)
@@ -25,11 +37,6 @@ async function makeTransaction(username: string, userAccount: Account, transacti
       value: formatedValue,
     });
   });
-}
-
-function formatValue(value: string) {
-  const formatedValue = value.replace(/R\$|,/gi, '').trim();
-  return parseInt(formatedValue);
 }
 
 async function findAccount(username: string) {
@@ -48,8 +55,45 @@ async function findAccount(username: string) {
   return account;
 }
 
+async function findTransactionsHistory(username: string, accountId: number) {
+  const transactions: FoundDbTransaction[] = await findTransactions(accountId);
+  const formatedTransactions = formatTransactions(username, transactions);
+  return formatedTransactions;
+}
+
+function formatTransactions(username: string, transactions: FoundDbTransaction[]) {
+  return transactions.map((transaction) => {
+    if (transaction.debitedAccount.user.username === username) {
+      formatDate(transaction.createdAt);
+      return {
+        creditedAccount: transaction.creditedAccount.user.username,
+        value: formatValueToString(transaction.value),
+        date: formatDate(transaction.createdAt),
+      };
+    } else {
+      formatDate(transaction.createdAt);
+      return {
+        debitedAccount: transaction.debitedAccount.user.username,
+        value: formatValueToString(transaction.value),
+        date: formatDate(transaction.createdAt),
+      };
+    }
+  });
+}
+
+function formatDate(date: Date) {
+  const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  const brDate = date.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  const [todayDate, todayTime] = today.split(' ');
+  const [brDateDate, brDateTime] = brDate.split(' ');
+
+  if (todayDate === brDateDate) return brDateTime;
+  if (todayDate !== brDateDate) return brDateDate;
+}
+
 const transactionService = {
   makeTransaction,
+  findTransactionsHistory,
 };
 
 export default transactionService;

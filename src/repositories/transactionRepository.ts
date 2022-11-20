@@ -9,3 +9,32 @@ export async function saveTransaction(prisma = db, transaction: TransactionCreat
     data: transaction,
   });
 }
+
+export async function findTransactions(accountId: number) {
+  return await db.transaction.findMany({
+    where: { OR: [{ debitedAccountId: accountId }, { creditedAccountId: accountId }] },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      debitedAccount: {
+        select: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      creditedAccount: {
+        select: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      value: true,
+      createdAt: true,
+    },
+  });
+}
