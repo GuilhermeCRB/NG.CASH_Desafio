@@ -13,7 +13,7 @@ export default function validateToken(req: Request, res: Response, next: NextFun
   const { authorization } = req.headers;
   const token = authorization?.replace('Bearer', '').trim();
 
-  if (!token) throw unauthorizedError('Esta operação requer o envio do token do usuário.');
+  if (!token) throw unauthorizedError('Esta operação requer o envio do token do usuário');
 
   jwt.verify(token, process.env.JWT_SECRET, (e, user) => {
     if (e) throw unauthorizedError('Token inválido');

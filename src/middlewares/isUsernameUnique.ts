@@ -8,7 +8,7 @@ export async function isUsernamelUnique(req: Request, res: Response, next: NextF
   const user: UserCreation = res.locals.body;
   const userFromDb = await findUser(user.username);
 
-  if (userFromDb) throw conflictError('O nome de usuário já está em uso. Por favor, escolha outro nome.');
+  if (userFromDb) throw conflictError('O nome de usuário já está em uso. Por favor, escolha outro nome');
 
   next();
 }

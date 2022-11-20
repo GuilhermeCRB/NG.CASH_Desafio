@@ -10,7 +10,8 @@ export type TransactionReceived = {
 
 export async function makeUserTransaction(req: Request, res: Response) {
   const userAccount: Account = res.locals.userAccount;
+  const { username }: { username: string } = res.locals.user;
   const transactionInfo: TransactionReceived = res.locals.body;
-  await transactionService.makeTransaction(userAccount, transactionInfo);
+  await transactionService.makeTransaction(username, userAccount, transactionInfo);
   res.sendStatus(200);
 }
