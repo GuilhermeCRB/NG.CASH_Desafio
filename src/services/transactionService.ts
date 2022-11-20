@@ -5,7 +5,7 @@ import { UserTransaction } from '../controllers/transactionController.js';
 import { findAccountByUserId, updateAccountBalance } from '../repositories/accountRepository.js';
 import { findTransactions, saveTransaction } from '../repositories/transactionRepository.js';
 import { findUser } from '../repositories/userRepository.js';
-import { badRequestError, notFoundError } from '../utils/errorUtils.js';
+import { badRequestError, internalServerError, notFoundError } from '../utils/errorUtils.js';
 import { formatValueToNumber, formatValueToString } from '../utils/formatValue.js';
 
 type FoundDbTransaction = {
@@ -64,20 +64,24 @@ async function findTransactionsHistory(username: string, accountId: number) {
 function formatTransactions(username: string, transactions: FoundDbTransaction[]) {
   return transactions.map((transaction) => {
     if (transaction.debitedAccount.user.username === username) {
-      formatDate(transaction.createdAt);
       return {
         creditedAccount: transaction.creditedAccount.user.username,
         value: formatValueToString(transaction.value),
         date: formatDate(transaction.createdAt),
       };
-    } else {
-      formatDate(transaction.createdAt);
+    }
+
+    if (transaction.creditedAccount.user.username === username) {
       return {
         debitedAccount: transaction.debitedAccount.user.username,
         value: formatValueToString(transaction.value),
         date: formatDate(transaction.createdAt),
       };
     }
+
+    throw internalServerError(
+      'Ocorreu um erro ao tentar obter seu histórico de transações. Por favor, tente novamente e, caso persista o erro, entre em contato com nossa equipe de suporte',
+    );
   });
 }
 

@@ -1,4 +1,4 @@
-type ErrorType = 'bad_request' | 'unauthorized' | 'not_found' | 'conflict';
+type ErrorType = 'bad_request' | 'unauthorized' | 'not_found' | 'conflict' | 'internal_server';
 
 export interface AppError {
   type: ErrorType;
@@ -14,6 +14,7 @@ export function errorTypeToStatusCode(type: ErrorType) {
   if (type === 'unauthorized') return 401;
   if (type === 'not_found') return 404;
   if (type === 'conflict') return 409;
+  if (type === 'internal_server') return 500;
 }
 
 export function badRequestError(message?: string | string[]): AppError {
@@ -30,4 +31,8 @@ export function notFoundError(message?: string): AppError {
 
 export function conflictError(message?: string): AppError {
   return { type: 'conflict', message: message ?? '' };
+}
+
+export function internalServerError(message?: string): AppError {
+  return { type: 'internal_server', message: message ?? '' };
 }
