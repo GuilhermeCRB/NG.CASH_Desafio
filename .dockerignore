@@ -1,6 +1,10 @@
 .env
 .env.test
 .env.development
+.eslintignore
+.eslintrc.cjs
+.lintstagedrc
+.prettierrc.cjs
 node_modules
 coverage
 dist
