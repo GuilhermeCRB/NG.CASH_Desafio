@@ -7,6 +7,11 @@ export function sanitizeInputs(req: Request, res: Response, next: NextFunction) 
     res.locals.body = sanitizeObject(object);
   }
 
+  if (req.query) {
+    const object = req.query;
+    res.locals.query = sanitizeObject(object);
+  }
+
   next();
 }
 

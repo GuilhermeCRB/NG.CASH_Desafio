@@ -1,7 +1,7 @@
-import db from '../config/database.js';
 import { Account, PrismaClient, User } from '@prisma/client';
 
-import { UserTransaction } from '../controllers/transactionController.js';
+import db from '../config/database.js';
+import { Filters, UserTransaction } from '../controllers/transactionController.js';
 import { findAccountByUserId, updateAccountBalance } from '../repositories/accountRepository.js';
 import { findTransactions, saveTransaction } from '../repositories/transactionRepository.js';
 import { findUser } from '../repositories/userRepository.js';
@@ -55,8 +55,14 @@ async function findAccount(username: string) {
   return account;
 }
 
-async function findTransactionsHistory(username: string, accountId: number) {
-  const transactions: FoundDbTransaction[] = await findTransactions(accountId);
+async function findTransactionsHistory(filters: Filters, username: string, accountId: number) {
+  let formatedFilters;
+  if (filters.dateFilter) {
+    formatedFilters = { ...filters, dateFilter: formatStringToDate(filters.dateFilter) };
+  } else {
+    formatedFilters = filters;
+  }
+  const transactions: any = await findTransactions(formatedFilters, accountId);
   const formatedTransactions = formatTransactions(username, transactions);
   return formatedTransactions;
 }
@@ -67,7 +73,7 @@ function formatTransactions(username: string, transactions: FoundDbTransaction[]
       return {
         creditedAccount: transaction.creditedAccount.user.username,
         value: formatValueToString(transaction.value),
-        date: formatDate(transaction.createdAt),
+        date: formatDateToString(transaction.createdAt),
       };
     }
 
@@ -75,7 +81,7 @@ function formatTransactions(username: string, transactions: FoundDbTransaction[]
       return {
         debitedAccount: transaction.debitedAccount.user.username,
         value: formatValueToString(transaction.value),
-        date: formatDate(transaction.createdAt),
+        date: formatDateToString(transaction.createdAt),
       };
     }
 
@@ -85,14 +91,33 @@ function formatTransactions(username: string, transactions: FoundDbTransaction[]
   });
 }
 
-function formatDate(date: Date) {
-  const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-  const brDate = date.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+function formatDateToString(date: Date) {
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const userLocale = Intl.DateTimeFormat().resolvedOptions().locale;
+  const today = new Date().toLocaleString(userLocale, { timeZone: userTimezone });
+  const brDate = date.toLocaleString(userLocale, { timeZone: userTimezone });
   const [todayDate, todayTime] = today.split(' ');
   const [brDateDate, brDateTime] = brDate.split(' ');
 
   if (todayDate === brDateDate) return brDateTime;
   if (todayDate !== brDateDate) return brDateDate;
+}
+
+function formatStringToDate(stringifiedDate: string) {
+  const [stringifiedDay, stringifiedMonth, stringifiedYear] = stringifiedDate.split('/');
+  const date = new Date(`${stringifiedYear}-${stringifiedMonth}-${stringifiedDay}T00:00:00Z`);
+  return convertDateToUTC(date);
+}
+
+function convertDateToUTC(date: any) {
+  return new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds(),
+  );
 }
 
 const transactionService = {

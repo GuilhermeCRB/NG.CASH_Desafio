@@ -16,6 +16,13 @@ export type ResponseTransaction = {
   date: string;
 };
 
+export type Filters = {
+  typeFilter: string;
+  dateFilter: string;
+  offset: string;
+  limit: string;
+};
+
 export async function makeUserTransaction(req: Request, res: Response) {
   const userAccount: Account = res.locals.userAccount;
   const user: UserFromToken = res.locals.user;
@@ -27,7 +34,9 @@ export async function makeUserTransaction(req: Request, res: Response) {
 export async function getTransactionsHistory(req: Request, res: Response) {
   const userAccount: Account = res.locals.userAccount;
   const user: UserFromToken = res.locals.user;
+  const filters: Filters = res.locals.query;
   const transactions: ResponseTransaction[] = await transactionService.findTransactionsHistory(
+    filters,
     user.username,
     userAccount.id,
   );

@@ -9,6 +9,6 @@ const transactionRouter = Router();
 
 transactionRouter
   .post('/transactions', validateToken, sanitizeInputs, validateAndSaveAccount, makeUserTransaction)
-  .get('/transactions/history', validateToken, validateAndSaveAccount, getTransactionsHistory);
+  .get('/transactions', validateToken, sanitizeInputs, validateAndSaveAccount, getTransactionsHistory);
 
 export default transactionRouter;
