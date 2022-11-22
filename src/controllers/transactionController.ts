@@ -1,7 +1,7 @@
 import { Account } from '@prisma/client';
 import { Request, Response } from 'express';
-import { UserFromToken } from '../middlewares/validateToken.js';
 
+import { UserFromToken } from '../middlewares/validateToken.js';
 import transactionService from '../services/transactionService.js';
 
 export type UserTransaction = {

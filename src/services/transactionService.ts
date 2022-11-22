@@ -27,6 +27,7 @@ async function makeTransaction(username: string, userAccount: Account, transacti
   if (creditedUsername === username)
     throw badRequestError('Não é possível realizar uma tranferência de uma conta para ela mesma');
   if (formatedValue > userAccount.balance) throw badRequestError('Saldo insuficiente');
+  if (formatedValue < 0) throw badRequestError('Forneça um valor válido para realizar a transferência');
 
   await db.$transaction(async (prisma: PrismaClient) => {
     await updateAccountBalance(prisma, userAccount.id, formatedValue, 'decrement');

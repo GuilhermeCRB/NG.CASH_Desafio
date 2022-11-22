@@ -36,7 +36,7 @@ model Transaction {
   debitedAccountId  Int
   creditedAccountId Int
   value             Int
-  createdAt         DateTime @default(now())
+  createdAt         DateTime @default(now()) @db.Timestamptz
   debitedAccount    Account  @relation("debitedAccount", fields: [debitedAccountId], references: [id])
   creditedAccount   Account  @relation("creditedAccount", fields: [creditedAccountId], references: [id])
 
