@@ -9,7 +9,7 @@
 - Node.js
 - Express.js
 - TypeScript
-- Jest
+- Prisma com PostgreSQL
 - API REST
 
 ***
@@ -105,13 +105,12 @@ Por fim, basta iniciar o sevidor
 npm start
 ```
 
-Alternativamente, é possível subir a aplicação utilizando Docker. Para tanto, rode o comando abaixo na raiz do projeto
+Alternativamente, é possível subir a aplicação utilizando Docker. Para tanto, rode o comando abaixo na raiz do projeto. Lembre-se de criar na raiz da aplicação o arquivo .env conforme o .env.example
 
 ```
 docker-compose up -d
 ```
 
-Lembre-se de criar na raiz da aplicação o arquivo .env conforme o .env.example
 
 ### Ambiente de Desenvolvimento
 
